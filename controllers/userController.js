@@ -85,7 +85,7 @@ const postLogin = [
         { expiresIn: '1d' }
       );
 
-      return res.json({ success: true, token });
+      return res.json({ success: true, token, role: user.role });
     } catch (err) {
       return res.status(500).json({ success: false, message: 'Server error' });
     }
