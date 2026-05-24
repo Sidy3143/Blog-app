@@ -92,15 +92,6 @@ const postLogin = [
   }
 ]
 
-const getLogout = async (req, res) => {
-  req.logout(err => {
-    if (err) {
-        console.error(err);
-    }
-    res.json({ success: true, message: 'Logged out successfully' });
-  });
-}
-
 const getPosts = async (req, res) => {
   try {
     const posts = await prisma.post.findMany({});

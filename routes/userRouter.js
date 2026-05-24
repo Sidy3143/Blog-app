@@ -7,8 +7,6 @@ router.post('/signup', userController.postSignup);
 
 router.post('/login', userController.postLogin);
 
-router.get('/logout', userController.getLogout);
-
 router.get('/posts', userController.getPosts);
 router.post('/posts', requireAdmin, userController.postCreatePost);
 
