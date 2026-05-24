@@ -8,7 +8,6 @@ const bcrypt = require('bcryptjs');
 const {body, validationResult, matchedData} = require('express-validator');
 const { get } = require('http');
 
-
 const validateSignup = [
   body('email').trim().isEmail().withMessage("Invalid email address"),
   body('password').isLength({ min: 6 }).withMessage("Password must be at least 6 characters long"),
@@ -265,7 +264,6 @@ const deleteComment = async (req, res) => {
 module.exports = {
     postSignup, // validation + handler
     postLogin,  // validation + handler
-    getLogout,
     getPosts,
     getPost,
     getComments,
