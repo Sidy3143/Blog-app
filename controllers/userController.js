@@ -211,7 +211,7 @@ const updatePost = async (req, res) => {
   }
 }
 
-// DELETE /posts/:slug/comments/:commentId
+// DELETE /posts/
 const deletePost = async (req, res) => {
   const postId = parseInt(req.params.id);
 
@@ -228,11 +228,20 @@ const updateComment = async (req, res) => {
   const { content } = req.body;
 
   try {
-    const comment = await prisma.comment.update({
+    const comment = await prisma.comment.findUnique({ where: { id: commentId } });
+    if (!comment) {
+      return res.status(404).json({ success: false, message: 'Comment not found' });
+    }
+    // check if the comment belongs to the user
+    if (comment.authorId !== req.user.id) {
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+    
+    const updatedComment = await prisma.comment.update({
       where: { id: commentId, authorId: req.user.id },
       data: { content }
     });
-    return res.json({ success: true, comment });
+    return res.json({ success: true, comment: updatedComment });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ success: false, message: 'Server error' });
@@ -243,6 +252,15 @@ const deleteComment = async (req, res) => {
   const commentId = parseInt(req.params.commentId);
 
   try {
+    const comment = await prisma.comment.findUnique({ where: { id: commentId } });
+    if (!comment) {
+      return res.status(404).json({ success: false, message: 'Comment not found' });
+    }
+    // check if the comment belongs to the user
+    if (comment.authorId !== req.user.id) {
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+
     await prisma.comment.delete({
       where: { id: commentId, authorId: req.user.id }
     });
