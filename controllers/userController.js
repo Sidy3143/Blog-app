@@ -211,7 +211,7 @@ const updatePost = async (req, res) => {
   }
 }
 
-// DELETE /posts/
+// DELETE /posts/:id
 const deletePost = async (req, res) => {
   const postId = parseInt(req.params.id);
 

@@ -21,7 +21,5 @@ router.post('/posts/:slug/comments', requireAuth, userController.postComment);
 router.put('/posts/:slug/comments/:commentId', requireAuth, userController.updateComment); 
 router.delete('/posts/:slug/comments/:commentId', requireAuth, userController.deleteComment);
 
-//router.get('/posts/new', userController.getCreatePost);  
-
 
 module.exports = router;
