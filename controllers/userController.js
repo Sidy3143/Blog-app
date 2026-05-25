@@ -9,6 +9,7 @@ const {body, validationResult, matchedData} = require('express-validator');
 const { get } = require('http');
 
 const validateSignup = [
+  body('username').trim().notEmpty().withMessage('Username is required'),  
   body('email').trim().isEmail().withMessage("Invalid email address"),
   body('password').isLength({ min: 6 }).withMessage("Password must be at least 6 characters long"),
   body('confirmPassword').custom((value, { req }) => {
@@ -29,16 +30,19 @@ const postSignup = [
       return res.status(400).json({ success: false, errors: errors.array() });
     }
 
-    const { email, password } = matchedData(req);
+    const { email, password, username } = matchedData(req);
 
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
-      await prisma.user.create({ data: { email, password: hashedPassword } });
+      await prisma.user.create({ data: { email, password: hashedPassword, username } });
       
       return res.json({ success: true, message: 'User registered successfully' });
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({ success: false, message: 'Server error' });
+      if (err.code === 'P2002') {
+        return res.status(409).json({ success: false, message: 'Email or username already exists' });
+      }
+
+      return res.status(500).json({ success: false, message: err.message });
     }
   }
 ]
@@ -65,7 +69,6 @@ const validateLogin = [
   })
 ]
 
-
 const postLogin = [
   validateLogin,
   async (req, res, next) => {
@@ -86,7 +89,7 @@ const postLogin = [
 
       return res.json({ success: true, token, role: user.role });
     } catch (err) {
-      return res.status(500).json({ success: false, message: 'Server error' });
+      return res.status(500).json({ success: false, message: err.message });
     }
   }
 ]
