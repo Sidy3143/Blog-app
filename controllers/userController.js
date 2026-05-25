@@ -96,7 +96,9 @@ const postLogin = [
 
 const getPosts = async (req, res) => {
   try {
-    const posts = await prisma.post.findMany({});
+    const posts = await prisma.post.findMany({
+      include: { author: true }
+    });
     res.json({ success: true, posts });
   } catch (err) {
     console.error(err);
